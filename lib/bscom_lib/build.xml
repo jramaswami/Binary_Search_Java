@@ -1,0 +1,56 @@
+<project name="BinarySearch Library" default="main" basedir=".">
+
+    <property name="build.dir" value="build" />
+    <property name="main.src.dir" value="src/main" />
+    <property name="main.build.dir" value="build/main" />
+    <property name="test.src.dir" value="src/test" />
+    <property name="test.build.dir" value="build/test" />
+    <property name="test.report.dir" value="report"/>
+
+
+    <path id="class.path">
+        <fileset dir=".." includes="*.jar" />
+        <dirset dir="${main.build.dir}" />
+        <dirset dir="${test.build.dir}" />
+    </path>
+
+    <target name="clean">
+        <delete dir="${build.dir}" />
+        <delete dir="${test.report.dir}" />
+        <delete file="../bscom.jar" />
+    </target>
+
+    <target name="init">
+        <mkdir dir="${main.build.dir}" />
+        <mkdir dir="${test.build.dir}" />
+        <mkdir dir="${test.report.dir}" />
+    </target>
+
+    <target name="compile" depends="init">
+        <javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false" debug="on">
+            <classpath refid="class.path"/>
+        </javac>
+        <javac srcdir="${test.src.dir}" destdir="${test.build.dir}" includeantruntime="false" debug="on">
+            <classpath refid="class.path"/>
+        </javac>
+    </target>
+
+    <target name="test" depends="compile">
+        <junit printsummary="yes" haltonfailure="no">
+            <formatter type="plain" />
+            <classpath refid="class.path" />
+            <batchtest fork="yes" todir="${test.report.dir}">
+                <fileset dir="${test.src.dir}">
+                    <include name="**/*Test*.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="distro" depends="compile">
+        <jar destfile="../bscom.jar" basedir="${main.build.dir}" />
+    </target>
+
+    <target name="main" depends="clean,compile,test,distro" />
+
+</project>
